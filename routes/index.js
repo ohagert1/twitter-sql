@@ -14,10 +14,9 @@ module.exports = function makeRouterWithSockets (io) {
     //   tweets: allTheTweets,
     //   showForm: true
     // });
-    client.query('SELECT * FROM tweets JOIN users ON users.id=tweets.user_id', function(err, result ) {
+    client.query('SELECT users.name, users.picture_url, tweets.content, tweets.id FROM tweets JOIN users ON users.id=tweets.user_id', function(err, result ) {
       if(err) return next(err);
       var tweets = result.rows;
-      console.log(tweets[0].picture_url);
       res.render('index', { title: 'Twitter.js', tweets: tweets, showForm: true});
     });
   }
@@ -35,7 +34,7 @@ module.exports = function makeRouterWithSockets (io) {
     //   showForm: true,
     //   username: req.params.username
     // });
-    client.query('SELECT tweets.content FROM users JOIN tweets ON users.id = tweets.user_id WHERE users.name=$1 ', [req.params.username], function(err, result ) {
+    client.query('SELECT users.name, users.picture_url, tweets.content, tweets.id FROM users JOIN tweets ON users.id = tweets.user_id WHERE users.name=$1 ', [req.params.username], function(err, result ) {
       if(err) return next(err);
       var tweets = result.rows;
       res.render('index', { title: 'Twitter.js', tweets: tweets, showForm: true});
@@ -48,10 +47,11 @@ module.exports = function makeRouterWithSockets (io) {
     // res.render('index', {
     //   title: 'Twitter.js',
     //   tweets: tweetsWithThatId // an array of only one element ;-)
-    client.query('SELECT tweets.content FROM tweets WHERE tweets.id = $1', [req.params.id],
+    client.query('SELECT * FROM tweets JOIN users ON users.id = tweets.user_id WHERE tweets.id = $1', [req.params.id],
     function(err, result ) {
       if(err) return next(err);
       var tweets = result.rows;
+      console.log(tweets);
       res.render('index', { title: 'Twitter.js', tweets: tweets, showForm: true});
     });
   });
@@ -71,7 +71,7 @@ module.exports = function makeRouterWithSockets (io) {
       client.query('INSERT INTO tweets (user_id, content) VALUES ((SELECT id from users where name=$1), $2)', [name, content])
       res.redirect('/');
     });
-    
+
   });
 
   // // replaced this hard-coded route with general static routing in app.js
