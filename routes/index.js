@@ -64,7 +64,6 @@ module.exports = function makeRouterWithSockets (io) {
     // io.sockets.emit('new_tweet', newTweet);
     client.query('SELECT users.id FROM users WHERE users.name = $1', [name], function(err, result ) {
       if(err) return next(err);
-      console.log(result.rows);
       if (result.rows.length === 0){
         client.query('INSERT INTO users (name, picture_url) VALUES ($1, $2)', [name, 'http://i.imgur.com/MItGWVS.jpg']);
       }
