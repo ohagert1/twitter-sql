@@ -17,7 +17,7 @@ module.exports = function makeRouterWithSockets (io) {
     client.query('SELECT * FROM tweets JOIN users ON users.id=tweets.user_id', function(err, result ) {
       if(err) return next(err);
       var tweets = result.rows;
-      console.log(tweets);
+      console.log(tweets[0].picture_url);
       res.render('index', { title: 'Twitter.js', tweets: tweets, showForm: true});
     });
   }
